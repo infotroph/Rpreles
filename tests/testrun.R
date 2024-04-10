@@ -1,15 +1,15 @@
 library(Rpreles)
-data(hydata)
-hydata[is.na(hydata)] <- -999
+data(s1)
+s1[is.na(s1)] <- -999
 
 daterange = 1:365
 DOY <- daterange
 n = length(daterange)
 
 CO2 <- rep(376, len=n)
-T=hydata[daterange, 'TAir']
-Precip=hydata[daterange, 'Precip']
-PAR=hydata[daterange, 'PPFD']
+T <- s1[daterange, 'TAir']
+Precip <- s1[daterange, 'Precip']
+PAR <- s1[daterange, 'PAR']
 ## Fake VPD
 D=sin(pi*(1:n)/n) + 0.01
 D = tapply(D, 1:n, function(x) runif(1, x/4, x*1.5))
@@ -39,8 +39,13 @@ o2 <- PRELES(PAR, T,  D, Precip, CO2, fAPAR, DOY=DOY, p=decid,
                       "Canopywater", "SOG", "S"), pft="notconifer",
              LOGFLAG=0)
 
-measuredGPP = hydata$GPP[daterange]
+measuredGPP <- s1$GPPobs[daterange]
 measuredGPP[measuredGPP < -998] <- NA
 plot(DOY, measuredGPP)
 points(DOY, o1$GPP, col=2)
 points(DOY, o2$GPP, col=3)
+legend(
+    "topright",
+    legend = c("measured", "conifer", "deciduous"),
+    col = c(1, 2, 3),
+    pch = 1)
